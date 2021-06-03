@@ -7,24 +7,30 @@ import java.util.List;
 
 public class employeePayrollDBservice
 {
-    private Connection getConnection() throws SQLException, ClassNotFoundException {
+    private Connection getConnection() throws employeeDataBaseException {
        // Class.forName("com.mysql.cj.jdbc.Driver");
         String jdbcURL="jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
         String userName="root";
         String password="mysql";
-        Connection con;
+        Connection con = null;
         System.out.println("Connecting to database");
-        con= DriverManager.getConnection(jdbcURL,userName,password);
-        System.out.println("Connection is sucessful "+con );
+        try
+        {
+            con= DriverManager.getConnection(jdbcURL,userName,password);
+            System.out.println("Connection is sucessful "+con );
+        } catch (SQLException throwables)
+        {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+
         return con;
 
     }
 
-    public List<EmployeePayRollData> readData()
-    {
+    public List<EmployeePayRollData> readData() throws employeeDataBaseException {
         String query="select *from emp_payroll;";
         List<EmployeePayRollData> employeePayRollDataList = new ArrayList<>();
-        try(Connection connection=this.getConnection();)
+        try(Connection connection=this.getConnection())
         {
 
             Statement statement=connection.createStatement();
@@ -38,9 +44,9 @@ public class employeePayrollDBservice
                employeePayRollDataList.add(new EmployeePayRollData(id,name,salary,startDate));
            }
         }
-        catch (SQLException | ClassNotFoundException throwables)
+        catch (SQLException throwables)
         {
-            throwables.printStackTrace();
+            throw new employeeDataBaseException("DataBase Exception");
         }
         return employeePayRollDataList;
 
