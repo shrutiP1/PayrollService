@@ -30,10 +30,16 @@ public class EmployeePayRollServiceTest
         Assertions.assertEquals(3,entriesAfterRead);
     }
     @Test
-    public void givenEmployeePayrollDB_WhenRetrieved_shouldMatchEmployeeCount()
-    {
+    public void givenEmployeePayrollDB_WhenRetrieved_shouldMatchEmployeeCount() throws employeeDataBaseException {
         EmployeeService employeeService=new EmployeeService();
         List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
         Assertions.assertEquals(3,employeePayRollData.size());
+    }
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdated_shouldSyncWithDB() throws employeeDataBaseException {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        employeeService.updateEmployeeSalary("Terisa",3000000);
+        boolean result=employeeService.checkEmployeePayRollInSyncWithDB("Terisa");
     }
 }

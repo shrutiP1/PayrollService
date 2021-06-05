@@ -5,16 +5,21 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EmployeeService {
+    private employeePayrollDBservice employeePayrolDBservice;
     List<EmployeePayRollData> employeePayRollList;
 
     public enum ioService {
         CONOSLE_IO, FILE_IO, DB_IO
     }
 
-    public EmployeeService() {
+    public EmployeeService()
+    {
+        employeePayrolDBservice=employeePayrollDBservice.getInstance();
     }
 
-    public EmployeeService(List<EmployeePayRollData> employeePayRollList) {
+    public EmployeeService(List<EmployeePayRollData> employeePayRollList)
+    {
+        this();
         this.employeePayRollList = employeePayRollList;
     }
 
@@ -66,11 +71,31 @@ public class EmployeeService {
         return list.size();
     }
 
-    public List<EmployeePayRollData> readEmployeePayrollData(ioService ioService) {
+    public List<EmployeePayRollData> readEmployeePayrollData(ioService ioService) throws employeeDataBaseException {
         if (ioService.equals(ioService.DB_IO)) {
-            this.employeePayRollList = new employeePayrollDBservice().readData();
+            this.employeePayRollList = employeePayrolDBservice.readData();
             return employeePayRollList;
         }
         return null;
+    }
+    public void updateEmployeeSalary(String name, double salary) throws employeeDataBaseException {
+        int result=employeePayrolDBservice.updateEmployeeData(name,salary);
+        if(result==0)
+            throw new employeeDataBaseException("Database Exception");
+        EmployeePayRollData employeePayRollData=this.getEmpPayrollData(name);
+        if(employeePayRollData!=null) employeePayRollData.salary=salary;
+    }
+
+    private EmployeePayRollData getEmpPayrollData(String name)
+    {
+        return employeePayRollList.stream()
+                                  .filter(employeePayrollDataItem->employeePayrollDataItem.name.equals(name))
+                                  .findFirst()
+                                  .orElse(null);
+    }
+    public boolean checkEmployeePayRollInSyncWithDB(String name) throws employeeDataBaseException {
+        List<EmployeePayRollData> employeePayRollDataList=employeePayrollDBservice.getInstance().getEmployeePayRollData(name);
+        return employeePayRollDataList.get(0).equals(getEmpPayrollData(name));
+
     }
 }
