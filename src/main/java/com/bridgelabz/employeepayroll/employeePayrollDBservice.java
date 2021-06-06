@@ -21,7 +21,6 @@ public class employeePayrollDBservice {
     }
 
 
-
     private Connection getConnection() throws employeeDataBaseException {
         // Class.forName("com.mysql.cj.jdbc.Driver");
         String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
@@ -70,12 +69,13 @@ public class employeePayrollDBservice {
         }
         return employeePayRollList;
     }
-    public  List<EmployeePayRollData> getEmployeePayForDateRange(LocalDate startDate, LocalDate endDate) throws employeeDataBaseException {
-        String sql=String.format("SELECT * FROM emp_payroll WHERE start BETWEEN '%s' AND '%s';",Date.valueOf(startDate),Date.valueOf(endDate));
+
+    public List<EmployeePayRollData> getEmployeePayForDateRange(LocalDate startDate, LocalDate endDate) throws employeeDataBaseException {
+        String sql = String.format("SELECT * FROM emp_payroll WHERE start BETWEEN '%s' AND '%s';", Date.valueOf(startDate), Date.valueOf(endDate));
         return this.getEmployeePayRollDataUsingDB(sql);
     }
 
-    private  List<EmployeePayRollData> getEmployeePayRollDataUsingDB(String sql) throws employeeDataBaseException {
+    private List<EmployeePayRollData> getEmployeePayRollDataUsingDB(String sql) throws employeeDataBaseException {
         List<EmployeePayRollData> employeePayRollDataList = new ArrayList<>();
         try (Connection connection = this.getConnection()) {
 
@@ -88,6 +88,94 @@ public class employeePayrollDBservice {
         return employeePayRollDataList;
 
     }
+
+    public Map<String, Double> getAverageSalaryByGender() throws employeeDataBaseException {
+        String sql = "SELECT gender,AVG(salary) as Avg_salary from emp_payroll GROUP BY gender;";
+        Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
+        try (Connection con = this.getConnection()) {
+            Statement statement = con.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                String gender = result.getString("gender");
+                double salary = result.getDouble("Avg_salary");
+                genderToAverageSalaryMap.put(gender, salary);
+            }
+        } catch (SQLException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        return genderToAverageSalaryMap;
+
+    }
+
+    public Map<String, Double> getSumOfSalaryByGender() throws employeeDataBaseException {
+        String sql = "SELECT gender,SUM(salary) as sum_salary from emp_payroll GROUP BY gender;";
+        Map<String, Double> genderToSumOfSalaryMap = new HashMap<>();
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                String gender = result.getString("gender");
+                double salary = result.getDouble("sum_salary");
+                genderToSumOfSalaryMap.put(gender, salary);
+            }
+        } catch (SQLException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        return genderToSumOfSalaryMap;
+    }
+
+    public Map<String, Double> getMaxSalaryByGender() throws employeeDataBaseException {
+        String sql = "SELECT gender,Max(salary) as max_salary from emp_payroll GROUP BY gender;";
+        Map<String, Double> genderToMaxSalaryMap = new HashMap<>();
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                String gender = result.getString("gender");
+                double salary = result.getDouble("max_salary");
+                genderToMaxSalaryMap.put(gender, salary);
+            }
+        } catch (SQLException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        return genderToMaxSalaryMap;
+    }
+
+    public Map<String, Double> getMinSalaryByGender() throws employeeDataBaseException {
+        String sql = "SELECT gender,Min(salary) as min_salary from emp_payroll GROUP BY gender;";
+        Map<String, Double> genderToMinSalaryMap = new HashMap<>();
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                String gender = result.getString("gender");
+                double salary = result.getDouble("min_salary");
+                genderToMinSalaryMap.put(gender, salary);
+            }
+        } catch (SQLException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        return genderToMinSalaryMap;
+
+    }
+
+    public Map<String, Integer> getCountOfEmployyesByGender() throws employeeDataBaseException {
+        String sql = "SELECT gender,Count(salary) as count from emp_payroll GROUP BY gender;";
+        Map<String, Integer> genderToCountOfEmpMap = new HashMap<>();
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                String gender = result.getString("gender");
+                int count = result.getInt("count");
+                genderToCountOfEmpMap.put(gender, count);
+            }
+        } catch (SQLException | employeeDataBaseException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        return genderToCountOfEmpMap;
+    }
+
     public List<EmployeePayRollData> readData() throws employeeDataBaseException {
         String query = "select *from emp_payroll;";
         return this.getEmployeePayRollDataUsingDB(query);
@@ -135,6 +223,5 @@ public class employeePayrollDBservice {
 
 
     }
-
 
 }

@@ -85,7 +85,31 @@ public class EmployeeService {
                  return employeePayrolDBservice.getEmployeePayForDateRange(startDate,endDate);
              return null;
     }
-
+    public Map<String, Double> readAverageSalaryByGender(ioService ioService) throws employeeDataBaseException {
+        if(ioService.equals(ioService.DB_IO))
+            return employeePayrolDBservice.getAverageSalaryByGender();
+        return null;
+    }
+    public Map<String, Double> readSumOfSalaryNyGender(ioService ioService) throws employeeDataBaseException {
+        if(ioService.equals(ioService.DB_IO))
+            return  employeePayrolDBservice.getSumOfSalaryByGender();
+        return null;
+    }
+    public Map<String, Double> readMaxSalaryNyGender(ioService ioService) throws employeeDataBaseException {
+        if(ioService.equals(ioService.DB_IO))
+            return  employeePayrolDBservice.getMaxSalaryByGender();
+        return null;
+    }
+    public Map<String, Double> readMinSalaryNyGender(ioService ioService) throws employeeDataBaseException {
+        if(ioService.equals(ioService.DB_IO))
+            return  employeePayrolDBservice.getMinSalaryByGender();
+        return null;
+    }
+    public Map<String, Integer> readCountOfEmployeeByGender(ioService ioService) throws employeeDataBaseException {
+        if(ioService.equals(ioService.DB_IO))
+            return  employeePayrolDBservice.getCountOfEmployyesByGender();
+        return null;
+    }
     public void updateEmployeeSalary(String name, double salary) throws employeeDataBaseException {
         int result=employeePayrolDBservice.updateEmployeeData(name,salary);
         if(result==0)

@@ -63,6 +63,45 @@ public class EmployeePayRollServiceTest
         List<EmployeePayRollData> employeePayRollDataList=EmployeeService.readEmployeePayRollDataRange(DB_IO,startDate,endDate);
         Assertions.assertEquals(3,employeePayRollDataList.size());
     }
+    @Test
+    public void givenPayRollData_WhenAverageSalaryRetrieved_shouldReturnProperValue() throws employeeDataBaseException {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        Map<String,Double> averageSalaryByGender=employeeService.readAverageSalaryByGender(DB_IO);
+        Assertions.assertTrue(averageSalaryByGender.get("M").equals(20000.0) && averageSalaryByGender.get("F").equals(3000000.0));
+    }
+    @Test
+    public void givenPayRollData_WhenSumOfSalaryRetrieved_shouldReturnProperValue() throws employeeDataBaseException
+    {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        Map<String,Double> sumOfSalaryByGender=employeeService.readSumOfSalaryNyGender(DB_IO);
+        Assertions.assertTrue(sumOfSalaryByGender.get("M").equals(40000.0) && sumOfSalaryByGender.get("F").equals(3000000.0));
+    }
+    @Test
+    public void givenPayRollData_WhenMaxOfSalaryRetrieved_shouldReturnProperValue() throws employeeDataBaseException
+    {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        Map<String,Double> sumOfSalaryByGender=employeeService.readMaxSalaryNyGender(DB_IO);
+        Assertions.assertTrue(sumOfSalaryByGender.get("M").equals(20000.0) && sumOfSalaryByGender.get("F").equals(3000000.0));
+    }
+    @Test
+    public void givenPayRollData_WhenMinOfSalaryRetrieved_shouldReturnProperValue() throws employeeDataBaseException
+    {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        Map<String,Double> sumOfSalaryByGender=employeeService.readMinSalaryNyGender(DB_IO);
+        Assertions.assertTrue(sumOfSalaryByGender.get("M").equals(20000.0) && sumOfSalaryByGender.get("F").equals(3000000.0));
+    }
+    @Test
+    public void givenPayRollData_CountOfGenderRetrieved_shouldReturnProperValue() throws employeeDataBaseException
+    {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        Map<String,Integer> countOfEmployeeByGender=employeeService.readCountOfEmployeeByGender(DB_IO);
+        Assertions.assertTrue(countOfEmployeeByGender.get("M").equals(2) && countOfEmployeeByGender.get("F").equals(1));
+    }
 
 
 }
