@@ -3,7 +3,9 @@ package com.bridgelabz.employeepayroll;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class employeePayrollDBservice {
     private PreparedStatement employeePayRollDataStatement;
@@ -17,6 +19,8 @@ public class employeePayrollDBservice {
             employeePayrolDBservice = new employeePayrollDBservice();
         return employeePayrolDBservice;
     }
+
+
 
     private Connection getConnection() throws employeeDataBaseException {
         // Class.forName("com.mysql.cj.jdbc.Driver");
@@ -66,20 +70,27 @@ public class employeePayrollDBservice {
         }
         return employeePayRollList;
     }
+    public  List<EmployeePayRollData> getEmployeePayForDateRange(LocalDate startDate, LocalDate endDate) throws employeeDataBaseException {
+        String sql=String.format("SELECT * FROM emp_payroll WHERE start BETWEEN '%s' AND '%s';",Date.valueOf(startDate),Date.valueOf(endDate));
+        return this.getEmployeePayRollDataUsingDB(sql);
+    }
 
-    public List<EmployeePayRollData> readData() throws employeeDataBaseException {
-        String query = "select *from emp_payroll;";
+    private  List<EmployeePayRollData> getEmployeePayRollDataUsingDB(String sql) throws employeeDataBaseException {
         List<EmployeePayRollData> employeePayRollDataList = new ArrayList<>();
         try (Connection connection = this.getConnection()) {
 
             Statement statement = connection.createStatement();
-            ResultSet resultset = statement.executeQuery(query);
+            ResultSet resultset = statement.executeQuery(sql);
             employeePayRollDataList = this.getEmployeePayRollData(resultset);
-        } catch (SQLException throwables) {
+        } catch (SQLException | employeeDataBaseException throwables) {
             throw new employeeDataBaseException("DataBase Exception");
         }
         return employeePayRollDataList;
 
+    }
+    public List<EmployeePayRollData> readData() throws employeeDataBaseException {
+        String query = "select *from emp_payroll;";
+        return this.getEmployeePayRollDataUsingDB(query);
     }
 
 
@@ -124,4 +135,6 @@ public class employeePayrollDBservice {
 
 
     }
+
+
 }

@@ -3,8 +3,10 @@ package com.bridgelabz.employeepayroll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.bridgelabz.employeepayroll.EmployeeService.ioService.DB_IO;
 import static com.bridgelabz.employeepayroll.EmployeeService.ioService.FILE_IO;
@@ -51,7 +53,16 @@ public class EmployeePayRollServiceTest
         boolean result=employeeService.checkEmployeePayRollInSyncWithDB("Terisa");
         Assertions.assertTrue(true);
 
-
     }
+    @Test
+    public void givenDateRange_WhenRetrieved_shouldMatchTheCount() throws employeeDataBaseException {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        LocalDate startDate=LocalDate.of(2018,01,01);
+        LocalDate endDate=LocalDate.now();
+        List<EmployeePayRollData> employeePayRollDataList=EmployeeService.readEmployeePayRollDataRange(DB_IO,startDate,endDate);
+        Assertions.assertEquals(3,employeePayRollDataList.size());
+    }
+
 
 }

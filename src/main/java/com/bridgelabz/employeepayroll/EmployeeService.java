@@ -1,13 +1,14 @@
 package com.bridgelabz.employeepayroll;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeeService {
-    private employeePayrollDBservice employeePayrolDBservice;
+    private static employeePayrollDBservice employeePayrolDBservice;
     List<EmployeePayRollData> employeePayRollList;
-
 
     public enum ioService {
         CONOSLE_IO, FILE_IO, DB_IO
@@ -79,6 +80,12 @@ public class EmployeeService {
         }
         return null;
     }
+    public static List<EmployeePayRollData> readEmployeePayRollDataRange(ioService ioService, LocalDate startDate, LocalDate endDate) throws employeeDataBaseException {
+             if(ioService.equals(ioService.DB_IO))
+                 return employeePayrolDBservice.getEmployeePayForDateRange(startDate,endDate);
+             return null;
+    }
+
     public void updateEmployeeSalary(String name, double salary) throws employeeDataBaseException {
         int result=employeePayrolDBservice.updateEmployeeData(name,salary);
         if(result==0)
@@ -107,4 +114,6 @@ public class EmployeeService {
         return employeePayRollDataList.get(0).equals(getEmpPayrollData(name));
 
     }
+
+
 }
