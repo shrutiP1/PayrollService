@@ -8,6 +8,7 @@ public class EmployeeService {
     private employeePayrollDBservice employeePayrolDBservice;
     List<EmployeePayRollData> employeePayRollList;
 
+
     public enum ioService {
         CONOSLE_IO, FILE_IO, DB_IO
     }
@@ -85,6 +86,14 @@ public class EmployeeService {
         EmployeePayRollData employeePayRollData=this.getEmpPayrollData(name);
         if(employeePayRollData!=null) employeePayRollData.salary=salary;
     }
+    public void updateEmployeeSalaryUsingPrepareStatement(String name, double salary) throws employeeDataBaseException {
+        int result=employeePayrolDBservice.updateEmployeeDataUsingPrepareStatement(name,salary);
+        if(result==0)
+            throw new employeeDataBaseException("Database Exception");
+        EmployeePayRollData employeePayRollData=this.getEmpPayrollData(name);
+        if(employeePayRollData!=null) employeePayRollData.salary=salary;
+    }
+
 
     private EmployeePayRollData getEmpPayrollData(String name)
     {
