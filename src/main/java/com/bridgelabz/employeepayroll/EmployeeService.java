@@ -1,5 +1,6 @@
 package com.bridgelabz.employeepayroll;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +8,15 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeeService {
-    private static employeePayrollDBservice employeePayrolDBservice;
+    private static EmployeePayrollDBservice employeePayrolDBservice;
     List<EmployeePayRollData> employeePayRollList;
-
     public enum ioService {
         CONOSLE_IO, FILE_IO, DB_IO
     }
 
     public EmployeeService()
     {
-        employeePayrolDBservice=employeePayrollDBservice.getInstance();
+        employeePayrolDBservice= EmployeePayrollDBservice.getInstance();
     }
 
     public EmployeeService(List<EmployeePayRollData> employeePayRollList)
@@ -110,6 +110,7 @@ public class EmployeeService {
             return  employeePayrolDBservice.getCountOfEmployyesByGender();
         return null;
     }
+
     public void updateEmployeeSalary(String name, double salary) throws employeeDataBaseException {
         int result=employeePayrolDBservice.updateEmployeeData(name,salary);
         if(result==0)
@@ -124,7 +125,9 @@ public class EmployeeService {
         EmployeePayRollData employeePayRollData=this.getEmpPayrollData(name);
         if(employeePayRollData!=null) employeePayRollData.salary=salary;
     }
-
+    public void addEmployeeToPayRoll(String name, double salary, LocalDate date, String gender) throws employeeDataBaseException, SQLException {
+        employeePayRollList.add(employeePayrolDBservice.addEmployeePayRoll(name,salary,date,gender));
+    }
 
     private EmployeePayRollData getEmpPayrollData(String name)
     {
@@ -134,7 +137,7 @@ public class EmployeeService {
                                   .orElse(null);
     }
     public boolean checkEmployeePayRollInSyncWithDB(String name) throws employeeDataBaseException {
-        List<EmployeePayRollData> employeePayRollDataList=employeePayrollDBservice.getInstance().getEmployeePayRollData(name);
+        List<EmployeePayRollData> employeePayRollDataList= EmployeePayrollDBservice.getInstance().getEmployeePayRollData(name);
         return employeePayRollDataList.get(0).equals(getEmpPayrollData(name));
 
     }

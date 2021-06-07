@@ -3,6 +3,7 @@ package com.bridgelabz.employeepayroll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import static com.bridgelabz.employeepayroll.EmployeeService.ioService.FILE_IO;
 public class EmployeePayRollServiceTest
 {
     @Test
-    public void given3EmployeeSwhenWrittenToFileShouldMatchEmployeeEntries()
+    public void given3EmployeesWhenWrittenToFileShouldMatchEmployeeEntries()
     {
         EmployeePayRollData[] arrayOfEmps={
                 new EmployeePayRollData(1,"shruti",20000d),
@@ -101,6 +102,14 @@ public class EmployeePayRollServiceTest
         List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
         Map<String,Integer> countOfEmployeeByGender=employeeService.readCountOfEmployeeByGender(DB_IO);
         Assertions.assertTrue(countOfEmployeeByGender.get("M").equals(2) && countOfEmployeeByGender.get("F").equals(1));
+    }
+    @Test
+    public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws employeeDataBaseException, SQLException {
+        EmployeeService employeeService=new EmployeeService();
+        List<EmployeePayRollData> employeePayRollData=employeeService.readEmployeePayrollData(DB_IO);
+        employeeService.addEmployeeToPayRoll("Mark",500000.0,LocalDate.now(),"M");
+        boolean result=employeeService.checkEmployeePayRollInSyncWithDB("Mark");
+        Assertions.assertTrue(result);
     }
 
 

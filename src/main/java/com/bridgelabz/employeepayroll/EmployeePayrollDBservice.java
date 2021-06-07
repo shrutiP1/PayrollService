@@ -7,16 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class employeePayrollDBservice {
+public class EmployeePayrollDBservice {
     private PreparedStatement employeePayRollDataStatement;
-    private static employeePayrollDBservice employeePayrolDBservice;
+    private static EmployeePayrollDBservice employeePayrolDBservice;
 
-    private employeePayrollDBservice() {
+    private EmployeePayrollDBservice() {
     }
 
-    public static employeePayrollDBservice getInstance() {
+    public static EmployeePayrollDBservice getInstance() {
         if (employeePayrolDBservice == null)
-            employeePayrolDBservice = new employeePayrollDBservice();
+            employeePayrolDBservice = new EmployeePayrollDBservice();
         return employeePayrolDBservice;
     }
 
@@ -220,8 +220,85 @@ public class employeePayrollDBservice {
         } catch (SQLException e) {
             throw new employeeDataBaseException("DataBase Problem");
         }
-
-
     }
 
+    public EmployeePayRollData addEmployeePayRollUC7(String name, double salary, LocalDate date, String gender) throws employeeDataBaseException {
+        int empId=-1;
+        EmployeePayRollData employeePayRollData=null;
+        String sql=String.format("insert into emp_payroll(name,salary,start,gender) values('%s',%s,'%s','%s')",
+                                                                  name,salary,Date.valueOf(date),gender);
+        try(Connection connection=this.getConnection())
+        {
+            Statement statement=connection.createStatement();
+            int rowAffected=statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
+            if(rowAffected==1)
+            {
+                ResultSet resultSet=statement.getGeneratedKeys();
+                if(resultSet.next()) empId=resultSet.getInt(1);
+            }
+            employeePayRollData=new EmployeePayRollData(empId,name,salary,date);
+        }
+        catch (SQLException throwables)
+        {
+            throw new employeeDataBaseException("DataBase Exception.");
+        }
+        return  employeePayRollData;
+    }
+
+    public EmployeePayRollData addEmployeePayRoll(String name, double salary, LocalDate date, String gender) throws employeeDataBaseException{
+        int empId=-1;
+        EmployeePayRollData employeePayRollData=null;
+        Connection connection=this.getConnection();
+        try(Statement statement=connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+            String sql=String.format("insert into emp_payroll(name,salary,start,gender) values('%s',%s,'%s','%s')",
+                    name,salary,Date.valueOf(date),gender);
+
+            int rowAffected=statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
+            if(rowAffected==1)
+            {
+                ResultSet resultSet=statement.getGeneratedKeys();
+                if(resultSet.next()) empId=resultSet.getInt(1);
+            }
+        } catch (SQLException throwables) {
+            throw new employeeDataBaseException("DataBase Exception");
+        }
+        try(Statement statement=connection.createStatement())
+        {
+            double deductions=salary*0.2;
+            double taxable_pay=salary-deductions;
+            double tax=taxable_pay*0.1;
+            double netPay=salary-tax;
+            String sql=String.format("insert into payroll_details (employee_id,basic_pay,deductions,taxable_pay,tax,net_Pay)"+
+                                         "values(%s,%s,%s,%s,%s,%s)",empId,salary,deductions,taxable_pay,tax,netPay);
+            int rowAffected=statement.executeUpdate(sql);
+            if(rowAffected==1)
+                employeePayRollData=new EmployeePayRollData(empId,name,salary,date);
+
+        } catch (SQLException throwables)
+        { try
+            {
+                connection.rollback();
+                return employeePayRollData;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            connection.commit();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        finally {
+            if(connection!=null) {
+                try {
+                    connection.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
+        return employeePayRollData;
+    }
 }
