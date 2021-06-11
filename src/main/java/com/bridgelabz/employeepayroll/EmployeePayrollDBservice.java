@@ -274,7 +274,6 @@ public class EmployeePayrollDBservice {
             String sql=String.format("insert into payroll_details (employee_id,basic_pay,deductions,taxable_pay,tax,net_Pay)"+
                                          "values(%s,%s,%s,%s,%s,%s)",empId,salary,deductions,taxable_pay,tax,netPay);
             int rowAffected=statement.executeUpdate(sql);
-            System.out.println(rowAffected);
             if(rowAffected==1)
                 employeePayRollData=new EmployeePayRollData(empId,name,salary,date);
 
