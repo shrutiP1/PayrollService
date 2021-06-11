@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class EmployeeService {
     private static EmployeePayrollDBservice employeePayrolDBservice;
     List<EmployeePayRollData> employeePayRollList;
+
     public enum ioService {
         CONOSLE_IO, FILE_IO, DB_IO
     }
@@ -61,7 +62,7 @@ public class EmployeeService {
         if (ioService.equals(ioService.FILE_IO)) {
             return EmployeePayrollFileIOService.countEntries();
         } else {
-            return 0;
+            return employeePayRollList.size();
         }
     }
 
@@ -127,6 +128,23 @@ public class EmployeeService {
     }
     public void addEmployeeToPayRoll(String name, double salary, LocalDate date, String gender) throws employeeDataBaseException, SQLException {
         employeePayRollList.add(employeePayrolDBservice.addEmployeePayRoll(name,salary,date,gender));
+    }
+    public  void addEmployeeToPayRoll(List<EmployeePayRollData> employeePayRollDataList) 
+    {
+        employeePayRollDataList.stream().forEach(employeePayRollData ->
+                {
+                    try {
+                        System.out.println("Employee Being added "+employeePayRollData.name);
+                        this.addEmployeeToPayRoll(employeePayRollData.name,employeePayRollData.salary,employeePayRollData.startDate,employeePayRollData.gender);
+                        System.out.println("Employee Added "+employeePayRollData.name);
+                    }
+                    catch (SQLException | employeeDataBaseException throwables) {
+                       
+                    }
+                    
+                }
+                );
+        System.out.println(employeePayRollDataList);
     }
 
     private EmployeePayRollData getEmpPayrollData(String name)

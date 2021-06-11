@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class EmployeePayRollData
 {
+     String gender;
     LocalDate startDate;
     int id;
     String name;
@@ -20,6 +21,13 @@ public class EmployeePayRollData
     {
         this(id, name, salary);
         this.startDate=startDate;
+    }
+
+    public EmployeePayRollData(int id, String name, String gender, double salary, LocalDate startDate)
+    {
+        this(id,name,salary,startDate);
+        this.gender=gender;
+
     }
 
 

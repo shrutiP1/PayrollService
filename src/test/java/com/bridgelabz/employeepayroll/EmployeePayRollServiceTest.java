@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -110,6 +112,27 @@ public class EmployeePayRollServiceTest
         employeeService.addEmployeeToPayRoll("Mark",500000.0,LocalDate.now(),"M");
         boolean result=employeeService.checkEmployeePayRollInSyncWithDB("Mark");
         Assertions.assertTrue(result);
+    }
+    @Test
+    public void given6Employees_WhenAdded_shouldMatchEmployeeEntries() throws employeeDataBaseException {
+       EmployeePayRollData[] arrayOfEmps={
+               new EmployeePayRollData(0,"Jeff Bezos","M",100000.0,LocalDate.now()),
+               new EmployeePayRollData(0,"Bill Gates","M",200000.0,LocalDate.now()),
+                new EmployeePayRollData(0,"Mark Zuckerberg","M",300000.0,LocalDate.now()),
+                new EmployeePayRollData(0,"Sundar","M",600000.0,LocalDate.now()),
+                new EmployeePayRollData(0,"Mukesh","M",100000.0,LocalDate.now()),
+               new EmployeePayRollData(0,"Anil","M",200000.0,LocalDate.now()),
+
+       };
+        EmployeeService employeeService=new EmployeeService();
+        employeeService.readEmployeePayrollData(DB_IO);
+        Instant start=Instant.now();
+        employeeService.addEmployeeToPayRoll(Arrays.asList(arrayOfEmps));
+        Instant end=Instant.now();
+        System.out.println("Duration Without thread "+ Duration.between(start,end));
+        employeeService.readEmployeePayrollData(DB_IO);
+        Assertions.assertEquals(7,employeeService.countEntries(DB_IO));
+
     }
 
 
